@@ -112,6 +112,33 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 
+// Secrets live in local.properties (git-ignored) or in environment variables.
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
+def localProp = { String name ->
+    def value = localProperties.getProperty(name)
+    if (value == null || value.trim().isEmpty()) {
+        value = System.getenv(name)
+    }
+    return (value == null || value.trim().isEmpty()) ? null : value
+}
+
+def escapeJavaString = { String value ->
+    '"' + value.replace('\\', '\\\\').replace('"', '\\"') + '"'
+}
+
+def telegramAppId = localProp("TELEGRAM_APP_ID")
+def telegramAppHash = localProp("TELEGRAM_APP_HASH")
+if (telegramAppId == null || telegramAppHash == null) {
+    throw new GradleException("Missing TELEGRAM_APP_ID / TELEGRAM_APP_HASH. Add them to local.properties (see local.properties.example) or set the environment variables.")
+}
+def safetyNetKey = localProp("SAFETYNET_KEY") ?: ""
+def googleAuthClientId = localProp("GOOGLE_AUTH_CLIENT_ID") ?: ""
+
 android {
     compileSdkVersion 36
     buildToolsVersion '36.0.0'
@@ -142,6 +169,11 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 36
+
+        buildConfigField "int", "APP_ID", telegramAppId.trim()
+        buildConfigField "String", "APP_HASH", escapeJavaString(telegramAppHash.trim())
+        buildConfigField "String", "SAFETYNET_KEY", escapeJavaString(safetyNetKey)
+        buildConfigField "String", "GOOGLE_AUTH_CLIENT_ID", escapeJavaString(googleAuthClientId)
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 

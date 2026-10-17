@@ -1,0 +1,26 @@
+# Copy this file to local.properties and fill in your own values.
+# local.properties is git-ignored and must never be committed.
+
+sdk.dir=/path/to/Android/Sdk
+
+# --- Release signing ---
+# Recommended: keep the keystore outside the repository and use an absolute path.
+# A path relative to the project root also works.
+RELEASE_STORE_FILE=/absolute/path/to/release.keystore
+RELEASE_STORE_PASSWORD=change-me
+RELEASE_KEY_ALIAS=change-me
+RELEASE_KEY_PASSWORD=change-me
+
+# --- Telegram API credentials ---
+# Create your own app at https://my.telegram.org and put the values here.
+TELEGRAM_APP_ID=0
+TELEGRAM_APP_HASH=change-me
+
+# --- Optional integrations (leave empty to disable) ---
+SAFETYNET_KEY=
+GOOGLE_AUTH_CLIENT_ID=
+
+# --- Optional beta update URLs ---
+BETA_PRIVATE_URL=
+BETA_PUBLIC_URL=
+BETA_HARDCORE_URL=
