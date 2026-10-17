@@ -1,46 +1,112 @@
-## Telegram messenger for Android
+# ElyGram
 
-[Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
-This repo contains the official source code for [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+Форк Telegram для Android (`org.elygram.messenger`, версия 12.10.6). Ниже — все фишки форка максимально кратко. Подробности и заметки по проверке — в [FEATURES.md](FEATURES.md).
 
-## Creating your Telegram Application
+## Приватность и невидимость
 
-We welcome all developers to use our API and source code to create applications on our platform.
-There are several things we require from **all developers** for the moment.
+- **Невидимка** — аккаунт всегда «не в сети», даже при открытом приложении.
+- **Невидимка без палева** — запросы прочтения не уходят на сервер, статус «онлайн» не загорается при входе в чат или отправке.
+- **Ярлык «Невидимка»** — переключение из контекстного меню иконки в лаунчере.
+- **Кнопка-призрак в навбаре** — тап переключает невидимку, долгий тап открывает звонки.
+- **Слияние подсветки в навбаре** — при невидимке выделенные кнопки выглядят одной капсулой.
+- **Без детекта скриншотов** — приложение больше не шлёт собеседнику «сделал скриншот».
 
-1. [**Obtain your own api_id**](https://core.telegram.org/api/obtaining_api_id) for your application.
-2. Please **do not** use the name Telegram for your app — or make sure your users understand that it is unofficial.
-3. Kindly **do not** use our standard logo (white paper plane in a blue circle) as your app's logo.
-3. Please study our [**security guidelines**](https://core.telegram.org/mtproto/security_guidelines) and take good care of your users' data and privacy.
-4. Please remember to publish **your** code too in order to comply with the licences.
+## Удалённые, исчезающие и одноразовые сообщения
 
-### API, Protocol documentation
+- **Сохранение удалённых** — удалённые сообщения остаются в чате с меткой «удалено» (в любом чате, включая каналы).
+- **Живое обновление** — сообщение помечается удалённым сразу, без перезахода в чат.
+- **Фоновое отслеживание** — удаления подхватываются при свёрнутом/закрытом приложении.
+- **Экран «Удалённые сообщения»** — отдельный список сохранённого, иконка отличается от «Удалить чат».
+- **Удаление удалённого** — повторное удаление реально убирает сообщение.
+- **«Удалить для себя»** — галочка в диалоге удаления, запоминается отдельно для каждого чата.
+- **Ответ на удалённое** — цитата (имя + текст) вставляется в текст ответа.
+- **Без скачивания медиа удалённых** — запросы к серверу не уходят, уже скачанное доступно.
+- **Прозрачность удалённого** — слайдер 10–100 % для бледности сообщения.
+- **Исчезающие сообщения** — удалённые по таймеру сохраняются с меткой «исчезло».
+- **Одноразовые фото/видео** — после просмотра остаются в чате, открываются и сохраняются как обычные.
+- **Метка «самоудаляющееся»** — иконка/текст у сохранённого одноразового медиа.
+- **Без спиннера и «истекшей фотографии»** — сохранённое одноразовое фото открывается локально.
+- **Без пересылки** — удалённые и сохранённые одноразовые сообщения нельзя переслать.
 
-Telegram API manuals: https://core.telegram.org/api
+## Метки и время в чате
 
-MTproto protocol manuals: https://core.telegram.org/mtproto
+- **Стиль меток** — «изменено»/«удалено»/«исчезло» показываются надписью или иконкой.
+- **Живой предпросмотр** — в настройках видно метки и прозрачность на фоне чата.
+- **Секунды во времени** — `12:00:30` вместо `12:00` (основное время, изменение, удаление, репост).
 
-### Compilation Guide
+## Меню сообщения
 
-**Note**: In order to support [reproducible builds](https://core.telegram.org/reproducible-builds), this repo contains dummy release.keystore,  google-services.json and filled variables inside BuildVars.java. Before publishing your own APKs please make sure to replace all these files with your own.
+- **Панель быстрых действий** — «Ответить / Удалить / Копировать / Изменить» иконками под списком.
+- **Вид меню на выбор** — панель внизу или все действия столбиком.
+- **Превью в настройках** — статичная карточка меню, обновляется при смене вида.
+- **Компактная панель** — кнопки заполняют ширину меню без пустых полей.
+- **Без ошибок у удалённых** — нет «Неизвестная ошибка», «Переслать» и строки прочтения.
 
-You will require Android Studio 2025.1.4, Android NDK 27.2.12479018 and Android SDK 36.
+## Фон, уведомления и энергосбережение
 
-1. Clone the Telegram source code with its submodules:
-   ```bash
-   git clone --recursive --shallow-submodules https://github.com/DrKLO/Telegram.git Telegram
-   ```
-   In case you forgot the `--recursive` flag, change to the `Telegram` directory and run:
-   ```bash
-   git submodule init && git submodule update --init --recursive --depth=1
-   ```
-2. Copy your release.keystore into TMessagesProj/config
-3. Fill out RELEASE_KEY_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_STORE_PASSWORD in gradle.properties to access your  release.keystore
-4.  Go to https://console.firebase.google.com/, create two android apps with application IDs org.telegram.messenger and org.telegram.messenger.beta, turn on firebase messaging and download google-services.json, which should be copied to the same folder as TMessagesProj.
-5. Open the project in the Studio (note that it should be opened, NOT imported).
-6. Fill out values in TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java – there’s a link for each of the variables showing where and which data to obtain.
-7. You are ready to compile Telegram.
+- **Keep-alive сервис** — приложение держит процесс и сеть живыми в фоне.
+- **Скрытие уведомления сервиса** — постоянную запись можно убрать, не отключая сервис.
+- **Persistent push-соединение** — уведомления и удаления приходят без FCM, через свой сокет.
+- **Watchdog после свайпа** — приложение само поднимается из фона через пару секунд.
+- **Снятие ограничения батареи** — предложение отключить оптимизацию (раз в сутки, максимум 3 отказа).
 
-### Localization
+## Видеокружки
 
-We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+- **CameraX-рекордер** — запись и превью из одного GL-кадра.
+- **Бесшовное переключение камер** — concurrent-камеры, мгновенный своп без ребинда.
+- **Плавное переключение** — кроссфейд без блюра и «переворота карточки».
+- **Выбор камеры при удержании** — передняя/задняя перед началом записи.
+- **Широкоугольная камера** — пресет `0.6x` и старт с ультраширика.
+- **Зум** — полоска, пресеты `0.6x / 1x / 3x / 5x / 10x`, «щипок», авто-переключение модулей (ширик/основная/теле).
+- **Пауза и отмена** — запись можно приостановить и продолжить или отменить.
+- **Отправка кнопкой записи** — отпускание/тап отправляет кружок (иконка-самолётик).
+- **Разрешение** — 640p / 480p / 360p.
+- **Частота кадров** — 30 / 60 FPS, отдельно для каждой камеры.
+- **Битрейт** — 750 кбит/с, 1, 1.2 или 2 Мбит/с.
+- **Стабилизация и шумодав** — EIS, OIS, шумоподавление (по возможностям устройства).
+- **Эффекты лица** — глаза, рот, шире, выше, зеркало, волна, рыбий глаз, воронка.
+- **Скрытие подсказки** — без «Slide to cancel» при записи.
+
+## Камера и звонки
+
+- **Выбор API камеры** — CameraX (по умолчанию) / Camera1 для видеокружков и встроенной камеры; Camera2 / CameraX / Camera1 для видеозвонков.
+- **Настоящий CameraX для фото** — превью `Preview`, снимок `ImageCapture`.
+- **Своя реализация Camera2** — переписанный бэкенд встроенной камеры и звонков.
+- **Зум в видеозвонках** — слайдер для исходящей камеры.
+- **16 КБ страниц** — поддержка Android 15+ (CameraX 1.4.2, выравнивание библиотек).
+
+## Внешний вид и настройки
+
+- **Экран «Настройки ElyGram»** — хаб: видеокружки, камера, чаты, невидимка, внешний браузер.
+- **Кастомные иконки** — достаточно положить PNG в `TMessagesProj/app_icons/`, сборка сгенерирует всё сама.
+- **Иконка Monet** — цвета из системной палитры Material You (Android 12+).
+- **Премиум для всех** — снята клиентская блокировка премиум-функций и иконок.
+- **Нижний навбар** — «Чаты» и «Профиль» без подписей + кнопка-призрак вместо звонков (звонки — по долгому тапу).
+- **Внешний браузер** — тумблер «Открывать ссылки во внешнем браузере».
+- **История изменений** — экран оформлен как чат (фон, прозрачный экшен-бар).
+- **Telegram ID в профиле** — числовой ID под @username, тап копирует.
+
+## Карты
+
+- **OpenStreetMap** — интерактивная карта и превью локаций на `osmdroid`; Google убран.
+
+## Сборка
+
+```bash
+./gradlew :TMessagesProj_App:assembleDebug -PdevAbi=arm64-v8a
+```
+
+`devAbi` опционален (по умолчанию все ABI). Готовый APK — в `TMessagesProj_App/build/outputs/apk/`.
+
+### Секреты
+
+Пароли ключа подписи и Telegram API ID/HASH **не хранятся в репозитории**. Они читаются из `local.properties` (файл в `.gitignore`) или из переменных окружения с теми же именами:
+
+- `RELEASE_STORE_FILE` — путь к keystore (от корня проекта или абсолютный)
+- `RELEASE_STORE_PASSWORD`
+- `RELEASE_KEY_ALIAS`
+- `RELEASE_KEY_PASSWORD`
+- `TELEGRAM_APP_ID` / `TELEGRAM_APP_HASH` — с https://my.telegram.org
+- `SAFETYNET_KEY`, `GOOGLE_AUTH_CLIENT_ID` — опционально
+
+Скопируйте `local.properties.example` в `local.properties` и заполните своими значениями. Сам keystore и `google-services.json` также исключены из git; ключ можно держать вне репозитория и указать к нему абсолютный путь в `RELEASE_STORE_FILE`.
